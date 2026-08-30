@@ -1,0 +1,45 @@
+spring.application.name=nonotion
+spring.main.banner-mode=off
+
+# Copia este archivo a application.properties y completa los valores reales.
+spring.datasource.url=jdbc:postgresql://localhost:5433/nonotion
+spring.datasource.username=nonotion
+spring.datasource.password=nonotion
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# API key de DeepSeek (NO subir a git)
+spring.ai.deepseek.api-key=TU_API_KEY_AQUI
+
+spring.security.filter-order=1
+spring.security.user.name=notion
+spring.security.user.password=notion
+
+# === Validation ===
+spring.messages.basename=errors
+
+# === Server ===
+server.port=8080
+
+spring.sql.init.mode=never
+
+# === Optional: Actuator (health checks, etc.) ===
+#management.endpoints.web.exposure-type=health,info
+
+# === Logging (adjust as needed) ===
+# logging.level.root=INFO
+# logging.level.org.springframework.security=DEBUG
+# logging.level.com.nonotion=INFO
+
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+# never auto-update; rely on Flyway
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_registration=true
+
+#flyway.enabled=true
+#flyway.locations=classpath:db/migration
+#flyway.user=notion
+#flyway.password=notion
+#flyway.schemas=public
+
+# Firma JWT (genera una propia, NO subir a git)
+jwt.signing-key=CAMBIAR_POR_UNA_CLAVE_SEGURA

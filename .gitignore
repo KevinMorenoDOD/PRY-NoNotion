@@ -25,3 +25,6 @@ Thumbs.db
 *.zip
 .env
 .env.local
+
+# Credenciales y configuración sensible
+backend/src/main/resources/application.properties
