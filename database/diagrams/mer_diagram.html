@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoNotion — MER Diagram (auth + tasks)</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            margin: 0;
+            padding: 2rem;
+        }
+        h1 { font-size: 1.4rem; }
+        p.sub { color: #94a3b8; font-size: 0.9rem; }
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+        .mermaid { background: transparent; }
+        footer { color: #64748b; font-size: 0.8rem; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <h1>NoNotion — MER Diagram</h1>
+    <p class="sub">Modules: <strong>auth</strong> + <strong>todo (tasks)</strong>. See <code>docs/models.md</code>.</p>
+
+    <div class="card">
+        <div class="mermaid">
+erDiagram
+    users ||--o{ refresh_tokens : "has"
+    users ||--o{ email_verification_tokens : "verifies"
+    users ||--o{ password_reset_tokens : "resets"
+    users ||--o{ task_lists : "owns"
+    users ||--o{ tasks : "owns"
+    task_lists ||--o{ tasks : "groups"
+
+    users {
+        bigserial id PK
+        varchar email UK
+        varchar password_hash
+        varchar display_name
+        boolean email_verified
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    refresh_tokens {
+        bigserial id PK
+        bigint user_id FK
+        varchar token_hash
+        timestamptz expires_at
+        timestamptz created_at
+    }
+    email_verification_tokens {
+        bigserial id PK
+        bigint user_id FK
+        varchar token_hash
+        timestamptz expires_at
+        timestamptz created_at
+    }
+    password_reset_tokens {
+        bigserial id PK
+        bigint user_id FK
+        varchar token_hash
+        timestamptz expires_at
+        timestamptz used_at
+        timestamptz created_at
+    }
+    task_lists {
+        bigserial id PK
+        bigint user_id FK
+        varchar name
+        varchar color
+        int capacity
+        int sort_order
+        timestamptz created_at
+        timestamptz deleted_at
+    }
+    tasks {
+        bigserial id PK
+        bigint user_id FK
+        bigint list_id FK
+        varchar title
+        text description
+        priority priority
+        timestamptz due_date
+        task_status status
+        timestamptz created_at
+        timestamptz updated_at
+        timestamptz deleted_at
+    }
+        </div>
+    </div>
+
+    <footer>NoNotion — initial data model. Render updated automatically by Mermaid.</footer>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    </script>
+</body>
+</html>

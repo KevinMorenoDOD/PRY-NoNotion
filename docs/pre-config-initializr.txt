@@ -1,0 +1,37 @@
+================ SPRING INITIALIZR PRE-CONFIG ================
+Project: NoNotion (backend of the modular monolith)
+
+--- Basic ----------------------------------------------------------
+Project:          Maven
+Language:         Java
+Spring Boot:      (latest stable 3.x at the moment of download)
+Packaging:        Jar
+Java:             21 (LTS)
+
+--- Project metadata ---
+Group:            com.nonotion
+Artifact:         backend
+Name:             backend
+Package name:     com.nonotion
+Description:      NoNotion backend — Modular Monolith
+
+--- Dependencies to check (Spring Initializr) ---
+[x] Spring Web                (REST API)
+[x] Spring Data JPA           (persistence / repositories)
+[x] Spring Security           (login + JWT)
+[x] Flyway Migration          (schema versioning in bd/)
+[x] PostgreSQL Driver         (database driver)
+[x] Validation                (Bean Validation on DTOs)
+[x] Spring AI OpenAI          (AI; configurable provider)
+[x] Lombok                    (reduce boilerplate, optional)
+
+--- Important notes (after download) ---
+- JWT does NOT come from Initializr: add the jjwt dependency to pom.xml.
+- pgvector embeddings: enable with the spring-ai-pgvector-store
+  dependency (add it manually to the pom).
+- If Ollama is not listed under Spring AI in Initializr, add
+  spring-ai-ollama later. spring-boot-starter-test is already included.
+
+
+
+  
