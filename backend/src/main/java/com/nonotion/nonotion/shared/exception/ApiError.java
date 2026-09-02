@@ -12,4 +12,16 @@ public class ApiError {
         this.message = message;
         this.details = details;
     }
+
+    public Instant getTimestamp() {
+        return timestamp;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getDetails() {
+        return details;
+    }
 }

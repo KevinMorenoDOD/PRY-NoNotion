@@ -3,6 +3,7 @@ package com.nonotion.nonotion.shared.security;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
 import java.util.Optional;
 
 @Component
@@ -12,22 +13,24 @@ public class CurrentUser {
         return SecurityContextHolder.getContext().getAuthentication();
     }
 
-    public Optional<String> getUserId(){
-
+    public Optional<String> getUserId() {
         Authentication authentication = getAuthentication();
-        if (authentication == null) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof AuthenticatedUser principal)) {
             return Optional.empty();
         }
-        return Optional.ofNullable((String) authentication.getPrincipal());
+        return Optional.ofNullable(principal.getId()).map(String::valueOf);
     }
 
-    public Optional<String> getEmail(){
-        return getUserId();
-    }
-
-    public boolean isAutenticated(){
+    public Optional<String> getEmail() {
         Authentication authentication = getAuthentication();
-        return authentication != null && !authentication.getAuthorities().isEmpty();
+        if (authentication == null || !(authentication.getPrincipal() instanceof AuthenticatedUser principal)) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(principal.getEmail());
     }
 
+    public boolean isAuthenticated() {
+        Authentication authentication = getAuthentication();
+        return authentication != null && authentication.isAuthenticated();
+    }
 }
