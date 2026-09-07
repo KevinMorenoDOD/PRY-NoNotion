@@ -13,12 +13,12 @@ public class CurrentUser {
         return SecurityContextHolder.getContext().getAuthentication();
     }
 
-    public Optional<String> getUserId() {
+    public Optional<Long> getUserId() {
         Authentication authentication = getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof AuthenticatedUser principal)) {
             return Optional.empty();
         }
-        return Optional.ofNullable(principal.getId()).map(String::valueOf);
+        return Optional.ofNullable(principal.getId());
     }
 
     public Optional<String> getEmail() {
