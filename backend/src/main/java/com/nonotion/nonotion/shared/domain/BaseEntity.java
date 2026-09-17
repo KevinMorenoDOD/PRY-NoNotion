@@ -1,10 +1,12 @@
 package com.nonotion.nonotion.shared.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.Instant;
 
 @MappedSuperclass
+@Getter
 public abstract class BaseEntity {
 
     @Id
@@ -17,13 +19,5 @@ public abstract class BaseEntity {
     @PrePersist
     protected void onCreate() {
         this.createdAt = Instant.now();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
     }
 }

@@ -1,14 +1,16 @@
 package com.nonotion.nonotion.auth.domain.model;
 
 import com.nonotion.nonotion.shared.domain.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
 @Entity
 @Table(name = "refresh_tokens")
+@Getter
+@NoArgsConstructor
 public class RefreshToken extends BaseEntity {
 
     @Column(name = "user_id", nullable = false)
@@ -20,25 +22,10 @@ public class RefreshToken extends BaseEntity {
     @Column(name = "expires_at", nullable = false)
     private Instant expiresAt;
 
-    protected RefreshToken() {
-    }
-
     public RefreshToken(Long userId, String tokenHash, Instant expiresAt) {
         this.userId = userId;
         this.tokenHash = tokenHash;
         this.expiresAt = expiresAt;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public String getTokenHash() {
-        return tokenHash;
-    }
-
-    public Instant getExpiresAt() {
-        return expiresAt;
     }
 
     public boolean isExpired() {

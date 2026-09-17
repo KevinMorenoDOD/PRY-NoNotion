@@ -1,12 +1,14 @@
 package com.nonotion.nonotion.tasks.application.port.out;
 
-import org.springframework.scheduling.config.Task;
+import com.nonotion.nonotion.tasks.domain.model.Tasks;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface TasksRepository {
-    Task save(Task task);
+    Tasks save(Tasks task);
 
-    Optional<Task> findByName(String name);
-    Optional<Task> findById(long id);
+    Optional<Tasks> findByIdAndUserId(Long id, Long userId);
+
+    List<Tasks> findAllByUserId(Long userId);
 }
