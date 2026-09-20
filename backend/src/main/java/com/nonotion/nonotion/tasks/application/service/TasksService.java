@@ -41,7 +41,7 @@ public class TasksService implements TasksUseCase {
         task.setDescription(request.description());
         task.setPriority(request.priority());
         task.setDueDate(request.dueDate());
-        task.setStatus(TaskStatus.TODO);
+        task.setStatus(request.taskStatus() != null ? request.taskStatus() : TaskStatus.TODO);
         task.setUpdatedAt(Instant.now());
 
         Tasks saved = tasksRepository.save(task);
@@ -50,6 +50,19 @@ public class TasksService implements TasksUseCase {
 
     @Override
     public List<TaskResponse> getTasks() {
+        Long userId = currentUser.getUserId()
+                .orElseThrow(() -> new IllegalStateException("Usuario no autenticado"));
+
+        List<Tasks> tasks = tasksRepository.findAllByUserId(userId);
+
+        return tasks.stream()
+                .filter(task -> task.getStatus() != TaskStatus.DELETED)
+                .map(TaskResponse::from)
+                .toList();
+    }
+
+    @Override
+    public List<TaskResponse> getAllTasksIncludingDeleted() {
         Long userId = currentUser.getUserId()
                 .orElseThrow(() -> new IllegalStateException("Usuario no autenticado"));
 
@@ -66,6 +79,7 @@ public class TasksService implements TasksUseCase {
                 .orElseThrow(() -> new IllegalStateException("Usuario no autenticado"));
 
         Tasks tasks = tasksRepository.findByIdAndUserId(id, userId)
+                .filter(task -> task.getStatus() != TaskStatus.DELETED)
                 .orElseThrow(() -> new IllegalArgumentException("Task not found"));
         return TaskResponse.from(tasks);
     }
@@ -77,7 +91,7 @@ public class TasksService implements TasksUseCase {
 
         Tasks taskToDelete = tasksRepository.findByIdAndUserId(id, userId).orElseThrow(() -> new IllegalArgumentException("Task not found"));
 
-        taskToDelete.setStatus(TaskStatus.DONE);
+        taskToDelete.setStatus(TaskStatus.DELETED);
         taskToDelete.setDeletedAt(Instant.now());
 
         Tasks deleted = tasksRepository.save(taskToDelete);
@@ -93,6 +107,9 @@ public class TasksService implements TasksUseCase {
         Tasks taskToUpdate = tasksRepository.findByIdAndUserId(request.id(), userId)
                 .orElseThrow(() -> new IllegalArgumentException("Task not found"));
 
+        if (request.listId() != null) {
+            taskToUpdate.setListId(request.listId());
+        }
         if (StringUtils.hasText(request.title())) {
             taskToUpdate.setTitle(request.title());
         }

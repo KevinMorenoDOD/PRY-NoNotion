@@ -8,6 +8,7 @@ import java.time.Instant;
 
 public record EditTaskRequest(
         Long id,
+        Long listId,
         String title,
         String description,
         Priority priority,

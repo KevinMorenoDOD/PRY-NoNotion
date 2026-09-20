@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Paleta clara (soft UI) ── */
+  --color-bg-surface: #e8ebee;
+  --color-surface-soft: #eef1f4;
+  --color-heading: #006d7a;
+  --color-accent-hover: #005f6b;
+  --color-accent-primary: #008c9e;
+  --color-accent-light: #00b4cc;
+  --color-accent-highlight: #00dffc;
+
+  /* ── Texto ── */
+  --color-text-primary: #2d3436;
+  --color-text-muted: #7a8794;
+  --color-text-accent: #006d7a;
+
+  /* ── Estado ── */
+  --color-danger: #c0392b;
+  --color-success: #2f9e44;
+
+  /* ── Sombras neomórficas (tema claro) ── */
+  --shadow-neo-raised: 6px 6px 12px rgba(163, 177, 198, 0.6),
+    -6px -6px 12px rgba(255, 255, 255, 0.95);
+  --shadow-neo-raised-sm: 3px 3px 6px rgba(163, 177, 198, 0.55),
+    -3px -3px 6px rgba(255, 255, 255, 0.9);
+  --shadow-neo-pressed: inset 4px 4px 8px rgba(163, 177, 198, 0.65),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.85);
+  --shadow-neo-pressed-sm: inset 2px 2px 5px rgba(163, 177, 198, 0.6),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.8);
+
+  /* ── Compatibilidad con código existente ── */
+  --color-neo-bg: #e8ebee;
+  --color-neo-surface: #eef1f4;
+  --color-neo-shadow-dark: #c3cdd8;
+  --color-neo-shadow-light: #ffffff;
+  --color-neo-accent: #008c9e;
+  --color-neo-text: #006d7a;
+  --color-neo-text-muted: #7a8794;
+  --color-primary: #008c9e;
+  --color-primary-hover: #005f6b;
+  --color-surface: #e8ebee;
+  --color-surface-light: #eef1f4;
+  --color-background: #e8ebee;
+  --color-text: #2d3436;
+  --color-text-muted: #7a8794;
+  --color-border: #cfd8e0;
+  --color-danger: #c0392b;
+  --color-success: #2f9e44;
+  --color-accent: #00dffc;
+  --color-primary-light: #00b4cc;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}

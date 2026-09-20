@@ -12,6 +12,8 @@ public interface TasksUseCase {
 
     List<TaskResponse> getTasks();
 
+    List<TaskResponse> getAllTasksIncludingDeleted();
+
     TaskResponse getTask(Long id);
 
     TaskResponse deleteTask(Long id);

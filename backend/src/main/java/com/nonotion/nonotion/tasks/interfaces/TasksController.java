@@ -39,6 +39,7 @@ public class TasksController {
     public TaskResponse editTask(@PathVariable Long id, @Valid @RequestBody EditTaskRequest request) {
         EditTaskRequest updated = new EditTaskRequest(
                 id,
+                request.listId(),
                 request.title(),
                 request.description(),
                 request.priority(),
