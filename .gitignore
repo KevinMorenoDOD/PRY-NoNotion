@@ -1,5 +1,6 @@
 # Java / Maven
 backend/target/
+target/
 *.class
 *.jar
 *.war
@@ -13,9 +14,19 @@ backend/target/
 *.swp
 
 # Node / frontend
+node_modules/
 frontend/node_modules/
 frontend/dist/
 frontend/build/
+frontend/.vite/
+.vite/
+*.tsbuildinfo
+.eslintcache
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
 # OS
 .DS_Store
@@ -25,6 +36,7 @@ Thumbs.db
 *.zip
 .env
 .env.local
+.env.*.local
 
 # Credenciales y configuración sensible
 backend/src/main/resources/application.properties
