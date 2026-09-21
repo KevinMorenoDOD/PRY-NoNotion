@@ -8,7 +8,7 @@ BEGIN
     END IF;
 
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'task_status') THEN
-        CREATE TYPE task_status AS ENUM ('TODO', 'IN_PROGRESS', 'DONE');
+        CREATE TYPE task_status AS ENUM ('TODO', 'IN_PROGRESS', 'DONE', 'DELETE');
     END IF;
 END $$;
 

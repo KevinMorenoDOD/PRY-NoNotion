@@ -5,10 +5,21 @@ interface TaskListsSidebarProps {
   taskLists: TaskList[];
   selectedId: number | null;
   onSelect: (id: number | null) => void;
-  onCreate: (name: string) => void;
+  onCreate: (name: string, color?: string) => void;
   onDelete: (id: number) => void;
   onDropTask: (taskId: number, listId: number) => void;
 }
+
+const LIST_COLORS = [
+  "#008c9e",
+  "#00b4cc",
+  "#2f9e44",
+  "#e67e22",
+  "#c0392b",
+  "#8e44ad",
+  "#2980b9",
+  "#d81b60",
+];
 
 export function TaskListsSidebar({
   taskLists,
@@ -22,6 +33,8 @@ export function TaskListsSidebar({
   const [newName, setNewName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
+  const [newColor, setNewColor] = useState<string | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [showCascade, setShowCascade] = useState(false);
 
   const activeList =
@@ -62,9 +75,17 @@ export function TaskListsSidebar({
     e.preventDefault();
     if (!newName.trim()) return;
     setIsCreating(true);
-    onCreate(newName.trim());
+    onCreate(newName.trim(), newColor ?? undefined);
     setNewName("");
+    setNewColor(null);
+    setIsFormOpen(false);
     setIsCreating(false);
+  };
+
+  const handleCancelCreate = () => {
+    setNewName("");
+    setNewColor(null);
+    setIsFormOpen(false);
   };
 
   return (
@@ -125,7 +146,7 @@ export function TaskListsSidebar({
                 ? {
                     backgroundColor: "var(--color-accent-primary)",
                     color: "#ffffff",
-                    boxShadow: "var(--shadow-neo-pressed-sm)",
+                    boxShadow: "var(--shadow-neo-elevated)",
                   }
                 : {
                     color: "var(--color-text-muted)",
@@ -154,7 +175,7 @@ export function TaskListsSidebar({
                       ? list.color || "var(--color-accent-primary)"
                       : "var(--color-bg-surface)",
                     boxShadow: isSelected
-                      ? "var(--shadow-neo-pressed-sm)"
+                      ? "var(--shadow-neo-elevated)"
                       : "var(--shadow-neo-raised-sm)",
                     outline: isDragOver
                       ? "2px dashed var(--color-accent-primary)"
@@ -171,7 +192,7 @@ export function TaskListsSidebar({
                       letterSpacing: "0.05em",
                       color: isSelected
                         ? "#ffffff"
-                        : "var(--color-text-muted)",
+                        : list.color || "var(--color-text-muted)",
                     }}
                   >
                     {list.name}
@@ -192,36 +213,123 @@ export function TaskListsSidebar({
             })}
           </div>
 
-          <form onSubmit={handleCreate} className="mt-4 shrink-0">
-            <div className="flex gap-2">
+          {!isFormOpen ? (
+            <button
+              type="button"
+              onClick={() => setIsFormOpen(true)}
+              className="mt-4 w-full px-3 py-2 rounded-xl cursor-pointer transition-all duration-200 shrink-0"
+              style={{
+                color: "var(--color-text-muted)",
+                boxShadow: "var(--shadow-neo-raised-sm)",
+                fontSize: "10px",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+              }}
+            >
+              + New list
+            </button>
+          ) : (
+            <form onSubmit={handleCreate} className="mt-4 shrink-0 flex flex-col gap-2">
               <input
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="New list"
-                className="flex-1 min-w-0 px-3 py-2 rounded-xl border-none outline-none text-sm"
+                autoFocus
+                className="w-full min-w-0 px-3 py-2 rounded-xl border-none outline-none text-sm transition-colors duration-150"
                 style={{
-                  backgroundColor: "var(--color-bg-surface)",
-                  color: "var(--color-text-primary)",
+                  backgroundColor: newColor
+                    ? newColor
+                    : "var(--color-bg-surface)",
+                  color: newColor ? "#ffffff" : "var(--color-text-primary)",
                   boxShadow: "var(--shadow-neo-pressed-sm)",
                 }}
               />
-              <button
-                type="submit"
-                disabled={isCreating || !newName.trim()}
-                className="px-3 py-2 rounded-xl cursor-pointer transition-all duration-200 disabled:opacity-50 shrink-0"
-                style={{
-                  backgroundColor: "var(--color-accent-primary)",
-                  color: "#ffffff",
-                  boxShadow: "var(--shadow-neo-raised-sm)",
-                  fontSize: "10px",
-                  textTransform: "uppercase",
-                }}
-              >
-                +
-              </button>
-            </div>
-          </form>
+              <div className="flex flex-wrap items-center gap-1.5">
+                {LIST_COLORS.map((c) => {
+                  const isPicked = newColor === c;
+                  return (
+                    <button
+                      type="button"
+                      key={c}
+                      title={c}
+                      onClick={() => setNewColor(isPicked ? null : c)}
+                      className="w-5 h-5 rounded-full cursor-pointer transition-transform duration-150 shrink-0"
+                      style={{
+                        backgroundColor: c,
+                        transform: isPicked ? "scale(1.15)" : "scale(1)",
+                        boxShadow: isPicked
+                          ? `0 0 0 2px var(--color-bg-surface), 0 0 0 3px ${c}`
+                          : "var(--shadow-neo-raised-sm)",
+                      }}
+                    />
+                  );
+                })}
+                <label
+                  title="Custom color"
+                  className="relative w-5 h-5 rounded-full flex items-center justify-center cursor-pointer shrink-0 transition-transform duration-150"
+                  style={{
+                    color: "var(--color-text-muted)",
+                    boxShadow:
+                      newColor && !LIST_COLORS.includes(newColor)
+                        ? `0 0 0 2px var(--color-bg-surface), 0 0 0 3px ${newColor}`
+                        : "var(--shadow-neo-raised-sm)",
+                    transform:
+                      newColor && !LIST_COLORS.includes(newColor)
+                        ? "scale(1.15)"
+                        : "scale(1)",
+                  }}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="12"
+                    height="12"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.66 0 3-1.34 3-3 0-.55-.22-1.05-.59-1.41-.36-.37-.58-.87-.58-1.42 0-1.1.9-2 2-2h1.75C20.04 14.17 22 12.34 22 10c0-4.42-4.48-8-10-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 8 6.5 8 8 8.67 8 9.5 7.33 11 6.5 11zm3-4C8.67 7 8 6.33 8 5.5S8.67 4 9.5 4s1.5.67 1.5 1.5S10.33 7 9.5 7zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 4 14.5 4s1.5.67 1.5 1.5S15.33 7 14.5 7zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 8 17.5 8s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+                  </svg>
+                  <input
+                    type="color"
+                    value={newColor ?? "#008c9e"}
+                    onChange={(e) => setNewColor(e.target.value)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                </label>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  disabled={isCreating || !newName.trim()}
+                  className="flex-1 px-3 py-2 rounded-xl cursor-pointer transition-all duration-200 disabled:opacity-50"
+                  style={{
+                    backgroundColor: "var(--color-accent-primary)",
+                    color: "#ffffff",
+                    boxShadow: "var(--shadow-neo-raised-sm)",
+                    fontSize: "10px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em",
+                  }}
+                >
+                  Add
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCancelCreate}
+                  className="px-3 py-2 rounded-xl cursor-pointer transition-all duration-200"
+                  style={{
+                    color: "var(--color-text-muted)",
+                    boxShadow: "var(--shadow-neo-raised-sm)",
+                    fontSize: "10px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em",
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
         </>
       )}
 

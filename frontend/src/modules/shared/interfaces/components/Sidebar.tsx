@@ -37,7 +37,7 @@ export function Sidebar() {
                 ? {
                     backgroundColor: "var(--color-accent-primary)",
                     color: "#ffffff",
-                    boxShadow: "var(--shadow-neo-pressed-sm)",
+                    boxShadow: "var(--shadow-neo-elevated)",
                   }
                 : {
                     color: "var(--color-text-muted)",

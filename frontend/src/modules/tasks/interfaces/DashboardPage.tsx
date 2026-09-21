@@ -73,7 +73,7 @@ export function DashboardPage() {
         taskLists={taskLists}
         selectedId={selectedListId}
         onSelect={setSelectedListId}
-        onCreate={(name) => createTaskList({ name })}
+        onCreate={(name, color) => createTaskList({ name, color })}
         onDelete={deleteTaskList}
         onDropTask={handleDropTask}
       />
