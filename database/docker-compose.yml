@@ -15,7 +15,6 @@ services:
       - ./migrations/V02_create_schema.sql:/docker-entrypoint-initdb.d/02_create_schema.sql:ro
       - ./migrations/V03_add_indexes.sql:/docker-entrypoint-initdb.d/03_add_indexes.sql:ro
       - ./migrations/V04_add_capacity_trigger.sql:/docker-entrypoint-initdb.d/04_add_capacity_trigger.sql:ro
-      - ./migrations/V05_add_deleted_task_status.sql:/docker-entrypoint-initdb.d/05_add_deleted_task_status.sql:ro
       #- ./seeds/V05_seed_data.sql:/docker-entrypoint-initdb.d/06_seed_data.sql:ro
 volumes:
   pgdata:

@@ -69,3 +69,21 @@ CREATE TABLE IF NOT EXISTS tasks (
     updated_at  TIMESTAMPTZ  NOT NULL DEFAULT now(),
     deleted_at  TIMESTAMPTZ
 );
+
+-- ---------------------------------------------------------------------------
+-- todo (notes) module
+-- ---------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS note_nodes (
+    id         BIGSERIAL PRIMARY KEY,
+    user_id    BIGINT      NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    parent_id  BIGINT      REFERENCES note_nodes(id) ON DELETE CASCADE,
+    type       notes_node_type NOT NULL,
+    title      VARCHAR(255) NOT NULL,
+    content    TEXT,
+    sort_order INT         NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ  NOT NULL DEFAULT now(),
+    deleted_at TIMESTAMPTZ
+);
+

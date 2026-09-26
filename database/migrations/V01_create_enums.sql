@@ -8,8 +8,10 @@ BEGIN
     END IF;
 
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'task_status') THEN
-        CREATE TYPE task_status AS ENUM ('TODO', 'IN_PROGRESS', 'DONE', 'DELETE');
+        CREATE TYPE task_status AS ENUM ('TODO', 'IN_PROGRESS', 'DONE', 'DELETED');
     END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'notes_node_type') THEN
+        CREATE TYPE notes_node_type AS ENUM ('FOLDER', 'NOTE');
+    END IF
 END $$;
-
-

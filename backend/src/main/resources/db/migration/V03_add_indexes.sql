@@ -17,3 +17,7 @@ CREATE INDEX IF NOT EXISTS idx_task_lists_user_id ON task_lists(user_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_user_id       ON tasks(user_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_user_status   ON tasks(user_id, status);
 CREATE INDEX IF NOT EXISTS idx_tasks_list_id       ON tasks(list_id);
+
+CREATE INDEX IF NOT EXISTS idx_note_nodes_user_parent ON note_nodes(user_id, parent_id);
+CREATE INDEX IF NOT EXISTS idx_note_nodes_parent       ON note_nodes(parent_id);
+CREATE INDEX IF NOT EXISTS idx_note_nodes_user_type    ON note_nodes(user_id, type);
