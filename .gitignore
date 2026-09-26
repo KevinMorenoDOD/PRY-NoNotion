@@ -38,5 +38,21 @@ Thumbs.db
 .env.local
 .env.*.local
 
-# Credenciales y configuración sensible
+# Credenciales y configuración sensible (solo example se commitea)
 backend/src/main/resources/application.properties
+backend/src/main/resources/application-*.properties
+!backend/src/main/resources/application.properties.example
+
+# Database
+database/*.bak
+database/*.xlsx
+database/users.*
+
+# Logs
+*.log
+logs/
+
+# Build outputs
+dist/
+build/
+out/
