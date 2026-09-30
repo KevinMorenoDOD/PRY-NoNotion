@@ -1,7 +1,7 @@
 CREATE OR REPLACE FUNCTION validate_note_node()
 RETURNS TRIGGER AS $$
 DECLARE
-    parent_type node_type;
+    parent_type notes_node_type;
     is_descendant BOOLEAN;
 BEGIN
     -- 1) Si hay parent_id: validar que existe, es FOLDER y mismo user_id
@@ -52,5 +52,5 @@ DROP TRIGGER IF EXISTS trg_validate_note_node ON note_nodes;
 
 CREATE TRIGGER trg_validate_note_node
     BEFORE INSERT OR UPDATE ON note_nodes
-    FOR EACH ROW
-    EXECUTE FUNCTION validate_note_node();
+                     FOR EACH ROW
+                     EXECUTE FUNCTION validate_note_node();

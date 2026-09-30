@@ -1,6 +1,6 @@
 # Frontend — NoNotion
 
-React 19 + Vite + TypeScript SPA with TanStack Query, Zustand, and TailwindCSS v4.
+React 18 + Vite + TypeScript SPA with TanStack Query, Zustand, and TailwindCSS v4.
 
 ## Quick Start
 
@@ -16,7 +16,7 @@ Dev server at `http://localhost:5173` (proxies API to `http://localhost:8080`).
 
 | Layer | Technology |
 |-------|------------|
-| Framework | React 19 + Vite 6 |
+| Framework | React 18 + Vite 6 |
 | Language | TypeScript 5.8 (strict mode) |
 | Routing | React Router 7 |
 | Server State | TanStack Query (React Query) 5 |
@@ -52,6 +52,11 @@ frontend/
 │   │   │   ├── application/     # useLogin, useRegister, useLogout
 │   │   │   ├── infrastructure/  # authApi (axios endpoints)
 │   │   │   └── interfaces/      # LoginPage, RegisterPage, AuthForm
+│   │   ├── notes/               # Notes module
+│   │   │   ├── domain/          # NoteNode, NoteNodeType, Folder
+│   │   │   ├── application/     # useNotes, useFolders, useCreateNote
+│   │   │   ├── infrastructure/  # notesApi, foldersApi
+│   │   │   └── interfaces/      # NotesPage, NoteEditor, FolderTree, NoteCard
 │   │   └── tasks/               # Tasks module
 │   │       ├── domain/          # Task, TaskList, Priority, TaskStatus
 │   │       ├── application/     # useTasks, useTaskLists, useCreateTask
@@ -63,7 +68,9 @@ frontend/
 ## Architecture Patterns
 
 ### Module Structure (Feature-First)
+
 Each business module follows:
+
 ```
 module/
 ├── domain/           # Types, enums, pure logic (no deps)
@@ -73,6 +80,7 @@ module/
 ```
 
 ### Data Flow
+
 ```
 Component (interfaces)
     │
@@ -87,6 +95,7 @@ Auth Interceptor (adds JWT) / Error Handler
 ```
 
 ### State Management
+
 - **Server state**: TanStack Query (caching, deduping, background refetch, optimistic updates)
 - **Client state**: Zustand (auth user, theme, UI modals) — minimal, no boilerplate
 - **No Redux/Context** for server data
@@ -114,18 +123,21 @@ Used in `src/modules/shared/infrastructure/apiClient.ts`.
 ## Key Files
 
 ### API Client (`src/modules/shared/infrastructure/apiClient.ts`)
+
 - Axios instance with base URL
 - Request interceptor: attaches `Authorization: Bearer <token>`
 - Response interceptor: handles 401 → token refresh → retry once
 - Centralized error normalization to `ApiError`
 
 ### Auth (`src/modules/auth/`)
+
 - `useLogin` / `useRegister` / `useLogout` — TanStack Query mutations
 - `useAuth` hook — provides `user`, `login`, `logout`, `isAuthenticated`
 - Tokens stored in `localStorage` (access + refresh) via `tokenStorage.ts`
 - `ProtectedRoute` wrapper for authenticated pages
 
 ### TanStack Query Provider (`src/App.tsx`)
+
 ```tsx
 <QueryClientProvider client={queryClient}>
   <AuthProvider>
@@ -137,12 +149,14 @@ Used in `src/modules/shared/infrastructure/apiClient.ts`.
 ```
 
 ### TailwindCSS v4 (`src/index.css`)
+
 ```css
 @import "tailwindcss";
 @theme {
   /* custom tokens if needed */
 }
 ```
+
 No `tailwind.config.js` needed (v4 uses CSS-first config).
 
 ## Adding a New Module
@@ -155,19 +169,20 @@ No `tailwind.config.js` needed (v4 uses CSS-first config).
 6. Add routes in `App.tsx`
 7. Export from `interfaces/index.ts` for clean imports
 
-Example (tasks module):
+Example (notes module):
+
 ```ts
-// application/useTasks.ts
-export function useTasks(listId: string) {
+// application/useNotes.ts
+export function useNotes(folderId?: string) {
   return useQuery({
-    queryKey: ['tasks', listId],
-    queryFn: () => tasksApi.getByList(listId),
-    enabled: !!listId,
+    queryKey: ['notes', folderId],
+    queryFn: () => notesApi.getAll(folderId),
+    enabled: true,
   });
 }
 
-// interfaces/TaskCard.tsx
-export function TaskCard({ task }: { task: Task }) { ... }
+// interfaces/NoteCard.tsx
+export function NoteCard({ note }: { note: NoteNode }) { ... }
 ```
 
 ## API Integration
@@ -175,12 +190,21 @@ export function TaskCard({ task }: { task: Task }) { ... }
 All endpoints defined in `infrastructure/*Api.ts` files:
 
 ```ts
-// tasksApi.ts
-export const tasksApi = {
-  getByList: (listId: string) => apiClient.get<Task[]>(`/tasks?listId=${listId}`),
-  create: (data: CreateTaskRequest) => apiClient.post<Task>('/tasks', data),
-  update: (id: string, data: EditTaskRequest) => apiClient.patch<Task>(`/tasks/${id}`, data),
-  delete: (id: string) => apiClient.delete(`/tasks/${id}`),
+// notesApi.ts
+export const notesApi = {
+  getAll: (folderId?: string) => apiClient.get<NoteNode[]>(`/notes${folderId ? `?folderId=${folderId}` : ''}`),
+  getById: (id: string) => apiClient.get<NoteNode>(`/notes/${id}`),
+  create: (data: CreateNoteRequest) => apiClient.post<NoteNode>('/notes', data),
+  update: (id: string, data: EditNoteRequest) => apiClient.patch<NoteNode>(`/notes/${id}`, data),
+  delete: (id: string) => apiClient.delete(`/notes/${id}`),
+};
+
+// foldersApi.ts
+export const foldersApi = {
+  getTree: () => apiClient.get<Folder[]>('/folders/tree'),
+  create: (data: CreateFolderRequest) => apiClient.post<Folder>('/folders', data),
+  update: (id: string, data: EditFolderRequest) => apiClient.patch<Folder>(`/folders/${id}`, data),
+  delete: (id: string) => apiClient.delete(`/folders/${id}`),
 };
 ```
 
@@ -210,6 +234,7 @@ npm run build
 Deploy `dist/` to any static host (Nginx, Vercel, Netlify, S3+CloudFront).
 
 ### Nginx Example
+
 ```nginx
 server {
   listen 80;

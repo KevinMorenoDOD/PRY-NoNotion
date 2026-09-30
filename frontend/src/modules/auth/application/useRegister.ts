@@ -15,7 +15,7 @@ export function useRegister() {
     setIsLoading(true);
     try {
       await register(email, password, displayName);
-      navigate("/dashboard");
+      navigate("/notes");
     } catch (err) {
       setError(parseApiError(err));
     } finally {

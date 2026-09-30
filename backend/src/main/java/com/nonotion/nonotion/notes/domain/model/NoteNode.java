@@ -3,7 +3,6 @@ package com.nonotion.nonotion.notes.domain.model;
 import com.nonotion.nonotion.shared.domain.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,12 +13,12 @@ import org.hibernate.type.SqlTypes;
 import java.time.Instant;
 
 @Entity
-@Table(name= "note_nodes")
+@Table(name = "note_nodes")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class NoteNodes extends BaseEntity {
+public class NoteNode extends BaseEntity {
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
@@ -30,7 +29,7 @@ public class NoteNodes extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "type")
-    private NotesNodeType nodeType = NotesNodeType.NOTE;
+    private NoteNodeType nodeType = NoteNodeType.NOTE;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -47,7 +46,5 @@ public class NoteNodes extends BaseEntity {
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
-    public NoteNodes(Long userId, Long parentId, NotesNodeType nodeType, String content) {}
-
-
+    public NoteNode(Long userId, Long parentId, NoteNodeType nodeType, String content) {}
 }

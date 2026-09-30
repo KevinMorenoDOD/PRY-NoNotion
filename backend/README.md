@@ -33,7 +33,17 @@ src/main/java/com/nonotion/nonotion/
 │   │   ├── persistence/    # JPA adapters for repositories
 │   │   └── security/       # UserDetailsService, UserPrincipal
 │   └── interfaces/         # AuthController (REST endpoints)
-└── tasks/                  # Tasks module (example business module)
+├── notes/                  # Notes module (folders + markdown notes)
+│   ├── domain/model/       # NoteNode, NoteNodeType (FOLDER, NOTE)
+│   ├── application/
+│   │   ├── port/in/        # NotesUseCase, FoldersUseCase
+│   │   ├── port/out/       # NotesRepository
+│   │   ├── service/        # NotesService, FoldersService
+│   │   └── dto/            # Request/Response DTOs
+│   ├── infrastructure/
+│   │   └── persistence/    # JPA adapters
+│   └── interfaces/         # NotesController, FoldersController
+└── tasks/                  # Tasks module
     ├── domain/model/       # Task, TaskList, Priority, TaskStatus
     ├── application/
     │   ├── port/in/        # TasksUseCase, TaskListsUseCase
@@ -87,11 +97,11 @@ spring.ai.deepseek.api-key=<your-api-key>
 ### Flyway Migrations
 
 Located at `src/main/resources/db/migration/`:
-- `V01_create_enums.sql` — Priority, TaskStatus enums
-- `V02_create_schema.sql` — Core tables (users, tokens, task_lists, tasks)
-- `V03_add_indexes.sql` — Performance & uniqueness indexes
-- `V04_add_capacity_trigger.sql` — Max tasks per list guard
-- `V05_validate_note_node_trigger.sql` — Note node validation
+- `V01__create_enums.sql` — Priority, TaskStatus, NoteNodeType enums
+- `V02__create_schema.sql` — Core tables (users, tokens, task_lists, tasks, note_nodes)
+- `V03__add_indexes.sql` — Performance & uniqueness indexes
+- `V04__add_capacity_trigger.sql` — Max tasks per list guard
+- `V05__validate_note_node_trigger.sql` — Note node validation (folder hierarchy)
 
 Run automatically on startup (`flyway.enabled=true`).
 
@@ -110,6 +120,20 @@ Run automatically on startup (`flyway.enabled=true`).
 | POST | `/verify-email` | Verify email with token |
 | GET | `/me` | Get current user profile |
 
+### Notes (`/api/v1/notes`, `/api/v1/folders`)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/notes` | List user's notes (filter: folder, search) |
+| POST | `/notes` | Create note |
+| GET | `/notes/{id}` | Get note by ID |
+| PATCH | `/notes/{id}` | Update note |
+| DELETE | `/notes/{id}` | Delete note (soft) |
+| GET | `/folders` | List user's folders (tree) |
+| POST | `/folders` | Create folder |
+| PATCH | `/folders/{id}` | Update folder (rename, move) |
+| DELETE | `/folders/{id}` | Delete folder (soft, cascades to children) |
+
 ### Tasks (`/api/v1/task-lists`, `/api/v1/tasks`)
 
 | Method | Endpoint | Description |
@@ -117,7 +141,7 @@ Run automatically on startup (`flyway.enabled=true`).
 | GET | `/task-lists` | List user's task lists |
 | POST | `/task-lists` | Create task list |
 | GET | `/task-lists/{id}` | Get task list with tasks |
-| PATCH | `/task-lists/{id}` | Rename task list |
+| PATCH | `/task-lists/{id}` | Update task list |
 | DELETE | `/task-lists/{id}` | Delete task list |
 | GET | `/tasks?listId={id}` | List tasks (filter by list) |
 | POST | `/tasks` | Create task |

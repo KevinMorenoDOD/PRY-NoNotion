@@ -1,7 +1,7 @@
 CREATE OR REPLACE FUNCTION validate_note_node()
 RETURNS TRIGGER AS $$
 DECLARE
-    parent_type node_type;
+    parent_type notes_node_type;
     is_descendant BOOLEAN;
 BEGIN
     -- 1) Si hay parent_id: validar que existe, es FOLDER y mismo user_id

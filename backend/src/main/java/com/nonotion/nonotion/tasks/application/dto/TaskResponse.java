@@ -15,8 +15,7 @@ public record TaskResponse (
         Instant dueDate,
         TaskStatus status
 ){
-    public static TaskResponse from (Tasks task)
-    {
+    public static TaskResponse from (Tasks task) {
         return new TaskResponse(
                 task.getId(),
                 task.getListId(),

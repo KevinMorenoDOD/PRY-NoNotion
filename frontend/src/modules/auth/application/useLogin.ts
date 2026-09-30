@@ -15,7 +15,7 @@ export function useLogin() {
     setIsLoading(true);
     try {
       await login(email, password);
-      navigate("/dashboard");
+      navigate("/notes");
     } catch (err) {
       setError(parseApiError(err));
     } finally {

@@ -73,7 +73,7 @@ If a module grows too much, it can be **extracted** into a microservice without 
 | Framework | **Spring Boot 3** | Standard, mature, dependency injection |
 | Security | **Spring Security + JWT** | Multi-user login |
 | Persistence | **Spring Data JPA** | ORM, repositories per module |
-| DB migrations | **Flyway** | Schema versioning in `bd/` |
+| DB migrations | **Flyway** | Schema versioning in `database/` |
 | AI | **Spring AI** | Provider abstraction (local or cloud) |
 | Build | **Maven** | Multi-module management |
 | Tests | JUnit 5 + Mockito | Unit tests per module |
@@ -117,8 +117,8 @@ Spring AI lets you set a **provider by configuration**, without touching code:
 
 ```
  Browser (React SPA)
-      │  HTTPS / JSON
-      ▼
+       │  HTTPS / JSON
+       ▼
  ┌───────────────────────────┐
  │ REST API (Spring Boot)    │   Modular Monolith
  │  · auth (JWT)             │
@@ -155,17 +155,17 @@ Spring AI lets you set a **provider by configuration**, without touching code:
 
 ---
 
-## 5. Functional modules
+## 5. Functional modules (planned vs implemented)
 
-| Module | Responsibility |
-|---|---|
-| **`auth`** | Registration, login, JWT, user profile |
-| **`notes`** | Markdown notes, categories, tags, search, favorites |
-| **`projects`** | Projects: name, description, status, dates, linked notes |
-| **`tasks`** | Activities: title, priority, deadline, status, assignment to project/user |
-| **`workflows`** | Definition of states and transitions (e.g. `Backlog → In progress → Done`), assignment rules |
-| **`ai`** | Internal chat + semantic search (RAG) over the user's content |
-| **`shared`** | Common base: security, audit, utilities, error handling |
+| Module | Responsibility | Status |
+|---|---|---|
+| **`auth`** | Registration, login, JWT, user profile | ✅ Implemented |
+| **`notes`** | Markdown notes, folders, tags, search, favorites | ✅ Implemented (backend + frontend) |
+| **`tasks`** | Activities: title, priority, deadline, status, task lists | ✅ Implemented (backend + frontend) |
+| **`projects`** | Projects: name, description, status, dates, linked notes | 📋 Planned |
+| **`workflows`** | Definition of states and transitions, Kanban board | 📋 Planned |
+| **`ai`** | Internal chat + semantic search (RAG) over user content | 📋 Planned |
+| **`shared`** | Common base: security, audit, utilities, error handling | ✅ Implemented |
 
 **Key rule:** all business modules **filter by user** (nobody sees another user's data). The AI too: it only queries the authenticated user's content.
 
@@ -182,45 +182,46 @@ PRY-NoNotion/
 │       ├── auth/
 │       ├── notes/
 │       ├── tasks/
-│       ├── projects/
-│       ├── workflows/
-│       └── ai/
+│       ├── projects/        # (planned)
+│       ├── workflows/       # (planned)
+│       └── ai/              # (planned)
 ├── frontend/                # React + Vite + TypeScript
 │   ├── src/
-│   │   ├── pages/           # Notes, Tasks, Projects, Workflows, Chat
-│   │   ├── components/
-│   │   ├── services/        # API client
-│   │   └── store/           # Zustand
+│   │   ├── modules/
+│   │   │   ├── shared/      # API client, auth, error handling
+│   │   │   ├── auth/        # Login, register, protected routes
+│   │   │   ├── notes/       # Notes UI (TipTap editor, folders)
+│   │   │   └── tasks/       # Tasks UI (lists, board, forms)
+│   │   └── ...
 │   └── package.json
-├── bd/
-│   ├── init.sql             # DB creation and extensions (pgvector)
-│   └── migrations/          # Flyway SQL (or they live in backend/resources/db/migration)
+├── database/
+│   ├── docker-compose.yml   # PostgreSQL + pgvector
+│   ├── migrations/          # Flyway SQL migrations
+│   └── seeds/               # Demo data
 └── docs/
     └── README.md            # This document
 ```
 
-**Note on migrations:** it is recommended to keep them with Flyway inside `backend/src/main/resources/db/migration` (they travel with the backend), and leave only the `init.sql` in `bd/` (create the DB and enable pgvector).
+**Note on migrations:** it is recommended to keep them with Flyway inside `backend/src/main/resources/db/migration` (they travel with the backend), and leave only the `docker-compose.yml` and init scripts in `database/`.
 
 ---
 
-## 7. Initial data model
+## 7. Current data model (implemented)
 
 ```
-users (id, email, password_hash, display_name, created_at)
+users (id, email, password_hash, display_name, email_verified, created_at, updated_at)
 
-notes (id, user_id, title, content_md, category, tags, favorite, created_at, updated_at)
-       · content_md → an embedding is generated on save
+refresh_tokens (id, user_id, token_hash, expires_at, created_at)
+email_verification_tokens (id, user_id, token_hash, expires_at, created_at)
+password_reset_tokens (id, user_id, token_hash, expires_at, used_at, created_at)
 
-projects (id, user_id, name, description, status, start_date, due_date)
+task_lists (id, user_id, name, color, sort_order, created_at, deleted_at)
+tasks (id, user_id, list_id, title, description, priority, due_date, status, created_at, updated_at, deleted_at)
 
-tasks (id, user_id, project_id, title, description, priority, due_date, status, assigned_to)
+note_nodes (id, user_id, parent_id, type[FOLDER|NOTE], title, content, sort_order, created_at, updated_at, deleted_at)
 
-workflow_states (id, user_id, name, color, sort_order)        # e.g. Backlog, In progress, Done
-workflow_transitions (id, user_id, from_state, to_state, label) # movement rules
-
-embeddings (id, user_id, source_type, source_id, content_text, embedding vector)
-
-ai_conversations (id, user_id, question, answer, created_at)
+embeddings (planned)
+ai_conversations (planned)
 ```
 
 ---
@@ -229,38 +230,42 @@ ai_conversations (id, user_id, question, answer, created_at)
 
 Each phase leaves the app **usable** and builds on top of the previous one.
 
-### Phase 0 — Skeleton
-- [ ] Folder structure backend/frontend/bd
-- [ ] Base Spring Boot + empty modules + `shared`
-- [ ] React + Vite + Tailwind base
-- [ ] `docker-compose.yml` (PostgreSQL + pgvector)
-- [ ] Flyway + `init.sql`
-- [ ] **`auth` module**: registration, login, JWT (Spring Security)
+### Phase 0 — Skeleton ✅ **DONE**
+- [x] Folder structure backend/frontend/database
+- [x] Base Spring Boot + empty modules + `shared`
+- [x] React + Vite + Tailwind base
+- [x] `docker-compose.yml` (PostgreSQL + pgvector)
+- [x] Flyway + migrations
+- [x] **`auth` module**: registration, login, JWT (Spring Security)
 
-### Phase 1 — Notes
-- [ ] Notes CRUD (Markdown)
-- [ ] Categories and tags
-- [ ] Basic search
-- [ ] Notes screen in React
+### Phase 1 — Notes ✅ **DONE**
+- [x] Notes CRUD (Markdown, folders, tags)
+- [x] Categories and tags
+- [x] Basic search
+- [x] Notes screen in React (TipTap editor)
 
-### Phase 2 — Projects and tasks
+### Phase 2 — Tasks ✅ **DONE**
+- [x] Task lists CRUD
+- [x] Tasks CRUD (priority, due date, status)
+- [x] Tasks screen in React (list + board view)
+
+### Phase 3 — Projects
 - [ ] Projects CRUD
-- [ ] Tasks CRUD (priority, due date, assignment)
-- [ ] Link tasks to projects and notes
-- [ ] Activities panel (simple board)
+- [ ] Link projects to notes and tasks
+- [ ] Project dashboard
 
-### Phase 3 — Workflows
+### Phase 4 — Workflows
 - [ ] Define states and transitions per user
 - [ ] Move tasks between states with rules
 - [ ] Kanban board per workflow
 
-### Phase 4 — Internal AI (RAG)
+### Phase 5 — Internal AI (RAG)
 - [ ] Generate embeddings when saving content
 - [ ] Semantic search (pgvector) per user
 - [ ] Chat with Spring AI (configurable engine: Ollama/cloud)
 - [ ] Conversation history
 
-### Phase 5 — Polish
+### Phase 6 — Polish
 - [ ] Unit and integration tests per module
 - [ ] Pagination and performance
 - [ ] API documentation (OpenAPI/Swagger)

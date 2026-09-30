@@ -9,7 +9,6 @@ import com.nonotion.nonotion.tasks.application.port.in.TasksUseCase;
 import com.nonotion.nonotion.tasks.application.port.out.TasksRepository;
 import com.nonotion.nonotion.tasks.domain.model.Tasks;
 import com.nonotion.nonotion.tasks.domain.model.TaskStatus;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;

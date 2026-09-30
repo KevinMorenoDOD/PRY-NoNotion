@@ -23,7 +23,8 @@
     "paths": {
       "@shared/*": ["src/modules/shared/*"],
       "@auth/*": ["src/modules/auth/*"],
-      "@tasks/*": ["src/modules/tasks/*"]
+      "@tasks/*": ["src/modules/tasks/*"],
+      "@notes/*": ["src/modules/notes/*"]
     }
   },
   "include": ["src"]

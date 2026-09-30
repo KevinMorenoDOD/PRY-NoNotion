@@ -11,10 +11,11 @@ services:
       - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./migrations/V01_create_enums.sql:/docker-entrypoint-initdb.d/01_create_enums.sql:ro
-      - ./migrations/V02_create_schema.sql:/docker-entrypoint-initdb.d/02_create_schema.sql:ro
-      - ./migrations/V03_add_indexes.sql:/docker-entrypoint-initdb.d/03_add_indexes.sql:ro
-      - ./migrations/V04_add_capacity_trigger.sql:/docker-entrypoint-initdb.d/04_add_capacity_trigger.sql:ro
+      #- ./migrations/V01_create_enums.sql:/docker-entrypoint-initdb.d/01_create_enums.sql:ro
+      #- ./migrations/V02_create_schema.sql:/docker-entrypoint-initdb.d/02_create_schema.sql:ro
+      #- ./migrations/V03_add_indexes.sql:/docker-entrypoint-initdb.d/03_add_indexes.sql:ro
+      #- ./migrations/V04_add_capacity_trigger.sql:/docker-entrypoint-initdb.d/04_add_capacity_trigger.sql:ro
+      #- ./migrations/V05_validate_note_node_trigger.sql:/docker-entrypoint-initdb.d/05_validate_note_node_trigger.sql:ro
       #- ./seeds/V05_seed_data.sql:/docker-entrypoint-initdb.d/06_seed_data.sql:ro
 volumes:
   pgdata:
